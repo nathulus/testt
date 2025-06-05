@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("[script.js] DOMContentLoaded triggered.");
     const sidebar = document.querySelector('.sidebar');
     const mainContent = document.querySelector('.main-content');
     const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
@@ -8,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshFrameBtn = document.getElementById('refresh-frame-btn');
     const topbarTitle = document.getElementById('current-site-title');
     const homeLink = document.getElementById('home-link');
+
+    if (!sidebar || !mainContent || !toggleSidebarBtn || !contentFrame || !iframePlaceholder || !siteList || !refreshFrameBtn || !topbarTitle || !homeLink) {
+        console.error("[script.js] Un ou plusieurs éléments essentiels du DOM sont introuvables.");
+        return; // Arrêter l'exécution si les éléments de base ne sont pas là
+    }
 
     const appSites = [
         { name: "AppTache", url: "https://apptache.onrender.com" },
@@ -31,22 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const showPlaceholder = (message = "Sélectionnez une option dans le menu ou cliquez sur Accueil.") => {
-        iframePlaceholder.innerHTML = `<i class="fas fa-home placeholder-icon"></i><p>${message}</p>`;
-        iframePlaceholder.style.display = 'flex';
-        contentFrame.style.display = 'none';
-        contentFrame.src = 'about:blank';
-        topbarTitle.textContent = "Mon Hub";
+        if (iframePlaceholder && contentFrame && topbarTitle) {
+            iframePlaceholder.innerHTML = `<i class="fas fa-home placeholder-icon"></i><p>${message}</p>`;
+            iframePlaceholder.style.display = 'flex';
+            contentFrame.style.display = 'none';
+            contentFrame.src = 'about:blank';
+            topbarTitle.textContent = "Mon Hub";
+        }
     };
 
     const showLoading = () => {
-         iframePlaceholder.innerHTML = `<i class="fas fa-spinner fa-spin placeholder-icon"></i><p>Chargement...</p>`;
-         iframePlaceholder.style.display = 'flex';
-         contentFrame.style.display = 'none';
+         if (iframePlaceholder && contentFrame) {
+             iframePlaceholder.innerHTML = `<i class="fas fa-spinner fa-spin placeholder-icon"></i><p>Chargement...</p>`;
+             iframePlaceholder.style.display = 'flex';
+             contentFrame.style.display = 'none';
+         }
     }
 
     const showIframe = () => {
-        iframePlaceholder.style.display = 'none';
-        contentFrame.style.display = 'block';
+        if (iframePlaceholder && contentFrame) {
+            iframePlaceholder.style.display = 'none';
+            contentFrame.style.display = 'block';
+        }
     };
 
     const getFaviconUrl = (url) => {
@@ -64,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const loadUrlInFrame = (url, siteName = "Contenu") => {
+        if (!contentFrame || !topbarTitle || !iframePlaceholder) return;
+
         if (url && url !== '#') {
             console.log("[script.js] Loading URL:", url);
             topbarTitle.textContent = siteName;
@@ -71,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (window.location.protocol === 'https:' && url.startsWith('http:')) {
                 console.warn("[script.js] Blocked loading insecure HTTP content:", url);
-                alert("Impossible de charger une page HTTP non sécurisée (http://...) sur cette page sécurisée (https://...).");
+                alert("Impossible de charger une page HTTP non sécurisée (http://...) sur cette page sécurisée (https://...). Besoin de HTTPS.");
                 showPlaceholder("Impossible de charger le contenu non sécurisé.");
                 return;
             }
@@ -108,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchMenuCategories() {
         const URL_BASE = "https://yfxbheoyavydissfpvwh.supabase.co";
-        const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmeGJoZW95YXZ5ZGlzc2ZwdndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTI0NTEsImV4cCI6MjA2MzY2ODQ1MX0.n10JVF_CSap7fmdbQYcgpmtrfacOX9HBaSB779KrV1o";
+        const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmeGJoZW95YXZ5ZGlzc2ZwdamhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTI0NTEsImV4cCI6MjA2MzY2ODQ1MX0.n10JVF_CSap7fmdbQYcgpmtrfacOX9HBaSB779KrV1o";
         const response = await fetch(`${URL_BASE}/rest/v1/URL`, {
             headers: {
                 apikey: API_KEY,
@@ -154,6 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trouver Accueil et Paramètres
         const homeLi = siteList.querySelector('li:first-child');
         const paramLi = siteList.querySelector('li:last-child');
+
+        if (!homeLi || !paramLi) {
+             console.error("[script.js] Impossible de trouver les liens Accueil ou Paramètres.");
+             return;
+        }
 
         // Ajouter les liens indépendants après Accueil
         independentLinks.forEach(link => {
@@ -398,9 +417,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     main();
     initializeLayout();
-    console.log("[script.js] DOMContentLoaded finished.");
+    console.log("[script.js] Initial script execution finished. Waiting for DOMContentLoaded.");
+});
 
-    // --- Chat IA Groq (nouveaux id) ---
+// Fonctions utilitaires pour le chat (doivent être accessibles globalement si appelées depuis d'autres scopes)
+function addChatMessage(text, who) {
+    const chatMessages = document.getElementById('chat-messages');
+     if (chatMessages) {
+        const div = document.createElement('div');
+        div.className = 'chat-message ' + (who === 'user' ? 'user' : 'ia');
+        div.textContent = text;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+     }
+}
+
+// Assurez-vous que d'autres fonctions potentiellement appelées depuis l'extérieur du DOMContentLoaded sont définies ici
+// ... (ajoutez ici d'autres fonctions si nécessaire, comme ajouterLien si elle est utilisée globalement)
+
+// Code lié à l'installation PWA et au chat qui nécessite que le DOM soit chargé
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Chat IA Groq ---
     const openChatBtn = document.getElementById('open-chat-btn');
     const chatPopup = document.getElementById('chat-popup');
     const closeChatBtn = document.getElementById('chat-close-btn');
@@ -409,175 +446,163 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
 
-    // Ouvre le chat
-    openChatBtn.addEventListener('click', () => {
-        chatPopup.style.display = 'flex';
-    });
-    // Ferme le chat
-    closeChatBtn.addEventListener('click', () => {
-        chatPopup.style.display = 'none';
-    });
-
-    // Déplacement du pop-up
-    let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
-    chatHeader.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        const rect = chatPopup.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-        document.body.style.userSelect = 'none';
-    });
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            // Calcul des nouvelles positions
-            let newLeft = e.clientX - dragOffsetX;
-            let newTop = e.clientY - dragOffsetY;
-            // Limites de la fenêtre (collision)
-            const minLeft = 0;
-            const minTop = 0;
-            const maxLeft = window.innerWidth - chatPopup.offsetWidth;
-            const maxTop = window.innerHeight - chatPopup.offsetHeight;
-            // Clamp
-            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
-            newTop = Math.max(minTop, Math.min(newTop, maxTop));
-            chatPopup.style.left = newLeft + 'px';
-            chatPopup.style.top = newTop + 'px';
-            chatPopup.style.right = 'auto';
-        }
-    });
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-        document.body.style.userSelect = '';
-    });
-
-    // === CONFIGURATION API IA ===
-    // Mets ici ta clé et l'URL de l'API Groq
-    const IA_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-    const IA_API_KEY = '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';
-
-    // Gestion du chat (animation, alignement, appel API)
-    chatForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const msg = chatInput.value.trim();
-        if (!msg) return;
-        addChatMessage(msg, 'user');
-        chatInput.value = '';
-        // Affiche l'animation "l'IA écrit..."
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'chat-typing';
-        typingDiv.id = 'ia-typing';
-        typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        chatMessages.appendChild(typingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // --- Appel API Groq réel ---
-        let iaResponse = '';
-        try {
-            const response = await fetch(IA_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${IA_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'llama3-8b-8192',
-                    messages: [
-                        { role: 'system', content: "Réponds toujours en français, sauf si l'utilisateur te demande explicitement de parler ou de traduire dans une autre langue (ex : 'traduis en anglais', 'translate in spanish', etc.), dans ce cas, réponds ou traduis dans la langue demandée." },
-                        { role: 'user', content: msg }
-                    ]
-                })
-            });
-            const data = await response.json();
-            iaResponse = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
-                ? data.choices[0].message.content
-                : "Réponse IA non disponible.";
-        } catch (err) {
-            iaResponse = "Erreur lors de la requête à l'IA.";
-        }
-        // Retire l'animation
-        const typing = document.getElementById('ia-typing');
-        if (typing) typing.remove();
-        addChatMessage(iaResponse, 'ia');
-    });
-    function addChatMessage(text, who) {
-        const div = document.createElement('div');
-        div.className = 'chat-message ' + (who === 'user' ? 'user' : 'ia');
-        div.textContent = text;
-        chatMessages.appendChild(div);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Gestion des clics sur les liens du menu
-    document.getElementById('home-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        loadUrlInFrame(localDashboardUrl, localDashboardName);
-    });
-
-    document.getElementById('notes-link')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        loadUrlInFrame('notes/notes.html', 'Notes');
-    });
-
-    document.getElementById('taches-link')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        loadUrlInFrame('taches/taches.html', 'Tâches');
-    });
-
-    document.getElementById('documents-link')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        loadUrlInFrame('documents/documents.html', 'Documents');
-    });
-
-    document.getElementById('settings-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        loadUrlInFrame('settings/settings.html', 'Paramètres');
-    });
-
-    document.getElementById('admin-link')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        loadUrlInFrame('admin/admin.html', 'Administration');
-    });
-
-    async function ajouterLien(e) {
-        e.preventDefault();
-        const nom = document.getElementById("nom").value;
-        const url = document.getElementById("url").value;
-        const description = document.getElementById("description").value;
-        const categorie = document.getElementById("categorie").value;
-
-        const res = await fetch(`${URL_BASE}/rest/v1/URL`, {
-            method: "POST",
-            headers: {
-                apikey: API_KEY,
-                Authorization: `Bearer ${API_KEY}`,
-                "Content-Type": "application/json",
-                Prefer: "return=representation"
-            },
-            body: JSON.stringify({ nom, url, description, categorie }),
+    // Vérifiez si les éléments existent avant d'ajouter des écouteurs d'événements
+    if (openChatBtn && chatPopup && closeChatBtn && chatHeader && chatForm && chatInput && chatMessages) {
+        console.log("[script.js] Éléments du chat pop-up trouvés. Initialisation...");
+        // Ouvre le chat
+        openChatBtn.addEventListener('click', () => {
+            chatPopup.style.display = 'flex';
+        });
+        // Ferme le chat
+        closeChatBtn.addEventListener('click', () => {
+            chatPopup.style.display = 'none';
         });
 
-        if (!res.ok) {
-            const error = await res.json();
-            alert("Erreur lors de l'ajout : " + (error.message || JSON.stringify(error)));
-            console.log(await res.json());
-            return;
+        // Déplacement du pop-up (si votre code pour cela est dans ce fichier)
+        let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
+        if(chatHeader) { // Double vérification
+            chatHeader.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                const rect = chatPopup.getBoundingClientRect();
+                dragOffsetX = e.clientX - rect.left;
+                dragOffsetY = e.clientY - rect.top;
+                document.body.style.userSelect = 'none';
+            });
         }
-
-        document.getElementById("add-link-form").reset();
-        chargerLiens();
-    }
-
-    // Ajouter le gestionnaire d'événements pour les liens site-link
-    document.querySelectorAll('.site-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const url = link.getAttribute('href');
-            const title = link.getAttribute('data-title');
-            loadUrlInFrame(url, title);
-            if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('full-width');
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && chatPopup) {
+                let newLeft = e.clientX - dragOffsetX;
+                let newTop = e.clientY - dragOffsetY;
+                const minLeft = 0;
+                const minTop = 0;
+                const maxLeft = window.innerWidth - chatPopup.offsetWidth;
+                const maxTop = window.innerHeight - chatPopup.offsetHeight;
+                newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+                newTop = Math.max(minTop, Math.min(newTop, maxTop));
+                chatPopup.style.left = newLeft + 'px';
+                chatPopup.style.top = newTop + 'px';
+                chatPopup.style.right = 'auto';
             }
         });
-    });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.userSelect = '';
+        });
+
+        // Soumission du formulaire de chat
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+            addChatMessage(msg, 'user');
+            chatInput.value = '';
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-typing';
+            typingDiv.id = 'ia-typing';
+            typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            let iaResponse = '';
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama3-8b-8192',
+                        messages: [
+                            { role: 'system', content: "Réponds toujours en français, sauf si l'utilisateur te demande explicitement de parler ou de traduire dans une autre langue (ex : 'traduis en anglais', 'translate in spanish', etc.), dans ce cas, réponds ou traduis dans la langue demandée." },
+                            { role: 'user', content: msg }
+                        ]
+                    })
+                });
+                const data = await response.json();
+                iaResponse = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+                    ? data.choices[0].message.content
+                    : "Réponse IA non disponible.";
+            } catch (err) {
+                iaResponse = "Erreur lors de la requête à l'IA.";
+            }
+            const typing = document.getElementById('ia-typing');
+            if (typing) typing.remove();
+            addChatMessage(iaResponse, 'ia');
+        });
+    } else {
+        console.error('[script.js] Un ou plusieurs éléments du chat pop-up sont introuvables lors du DOMContentLoaded.');
+    }
+
+    // --- Code lié à l'installation PWA ---
+    console.log("[script.js] Initialisation PWA...");
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+
+    if (installBtn) {
+        console.log("[script.js] Bouton d'installation trouvé.");
+        // Cacher le bouton par défaut
+        installBtn.style.display = 'none';
+
+        // Vérifier si le service worker est supporté
+        if ('serviceWorker' in navigator) {
+            console.log('ServiceWorker supporté par le navigateur.');
+            // L'enregistrement est déjà géré par la balise <script> dans index.html
+        } else {
+            console.log('ServiceWorker non supporté par le navigateur.');
+        }
+
+        // Écouter l'événement beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('Événement beforeinstallprompt déclenché', e);
+            e.preventDefault();
+            deferredPrompt = e;
+            // Afficher le bouton UNIQUEMENT quand l'installation est possible
+            console.log("[script.js] beforeinstallprompt déclenché, affichage du bouton d'installation.");
+            installBtn.style.display = 'flex';
+        });
+
+        // Vérifier si l'app est déjà installée et masquer le bouton si c'est le cas
+        window.addEventListener('appinstalled', () => {
+            console.log('Application installée avec succès !');
+            if (installBtn) {
+                installBtn.style.display = 'none';
+            }
+        });
+
+         // Masquer le bouton si l'installation n'est pas possible au chargement (si beforeinstallprompt n'a pas encore été déclenché)
+        // Ce check initial peut être moins critique si beforeinstallprompt est géré.
+        // Cependant, nous le laissons pour s'assurer qu'il n'apparaît pas par défaut.
+        // Note: deferredPrompt n'aura une valeur que si beforeinstallprompt s'est déjà déclenché.
+        // Un meilleur check serait de voir si l'app est déjà installée via window.matchMedia('(display-mode: standalone)').matches
+
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+             console.log("[script.js] L'application n'est pas en mode standalone.");
+             // Le bouton reste caché jusqu'à beforeinstallprompt
+        } else {
+             console.log("[script.js] L'application est en mode standalone (déjà installée ou lancée depuis l'écran d'accueil).");
+             if (installBtn) installBtn.style.display = 'none'; // Cacher si déjà en mode standalone
+        }
+
+        installBtn.addEventListener('click', async () => {
+            console.log('[script.js] Bouton d\'installation cliqué');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('Résultat de l\'installation:', outcome);
+                if (outcome === 'accepted') {
+                    console.log('Installation acceptée par l\'utilisateur !');
+                    if (installBtn) installBtn.style.display = 'none';
+                } else {
+                    console.log('Installation refusée par l\'utilisateur.');
+                }
+                deferredPrompt = null; // Réinitialiser deferredPrompt après utilisation
+            } else {
+                console.log('[script.js] Aucune installation en attente ou déjà installée.');
+                alert('L\'installation n\'est pas disponible pour le moment ou l\'application est déjà installée. Assurez-vous d\'utiliser un navigateur compatible (Chrome, Edge, Firefox Android...) et que le site est servi en HTTPS.');
+            }
+        });
+    } else {
+        console.error("[script.js] Bouton d\'installation (#install-btn) introuvable.");
+    }
 });
