@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révisions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/revisions.css">
+</head>
+<body>
+    <div id="custom-alert-container" class="custom-alert-container"></div>
+    <div id="notification-popup" class="notification-popup"></div>
+    <div class="content-wrapper">
+        <!-- Statistiques -->
+        <div class="stats-container">
+            <div class="stats-card">
+                <div class="stats-icon blue">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-value" id="total-chapters">0</div>
+                    <div class="stats-label">Chapitres au total</div>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon green">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-value" id="completed-chapters">0</div>
+                    <div class="stats-label">Chapitres complétés</div>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-value" id="remaining-chapters">0</div>
+                    <div class="stats-label">Chapitres restants</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <div class="progress-title">
+                    <i class="fas fa-chart-line"></i>
+                    Progression globale
+                </div>
+                <div class="progress-value" id="progress-percentage">0%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Boutons principaux -->
+        <div class="main-actions">
+            <button class="btn btn-primary" id="show-notes-btn">
+                <i class="fas fa-star"></i>
+                Notes et Moyennes
+            </button>
+            <button class="btn btn-secondary" id="show-revisions-btn">
+                <i class="fas fa-book"></i>
+                Révisions
+            </button>
+            <button class="btn btn-success" id="add-chapter-btn">
+                <i class="fas fa-plus"></i>
+                Ajouter un chapitre
+            </button>
+        </div>
+
+        <div class="revisions-section" style="display: none;">
+            <div class="subjects-container">
+                <!-- Les cartes de matières seront générées dynamiquement ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de saisie de note -->
+    <div class="note-popup" id="notePopup">
+        <div class="note-popup-content">
+            <div class="note-popup-header">
+                <div class="note-popup-title">Saisir la note du quiz</div>
+                <button class="note-popup-close" onclick="closeNotePopup()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="note-input-container">
+                <label class="note-input-label">Note sur 20</label>
+                <input type="number" class="note-input" id="noteInput" min="0" max="20" step="0.5" placeholder="Entrez votre note">
+                <button class="note-submit" onclick="submitNote()">Enregistrer la note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup d'ajout de chapitre -->
+    <div class="note-popup" id="addChapterPopup" style="display: none;">
+        <div class="note-popup-content">
+            <div class="note-popup-header">
+                <div class="note-popup-title">Ajouter un nouveau chapitre</div>
+                <button class="note-popup-close" onclick="closeAddChapterPopup()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chapter-form">
+                <div class="form-group">
+                    <label>Matière</label>
+                    <select id="subjectSelect" required>
+                        <option value="">Sélectionner une matière</option>
+                        <option value="Histoire">Histoire</option>
+                        <option value="Géographie">Géographie</option>
+                        <option value="EMC">EMC</option>
+                        <option value="Français">Français</option>
+                        <option value="Mathématiques">Mathématiques</option>
+                        <option value="Physique">Physique</option>
+                        <option value="Chimie">Chimie</option>
+                        <option value="SVT">SVT</option>
+                        <option value="Technologie">Technologie</option>
+                        <option value="Anglais">Anglais</option>
+                        <option value="Espagnol">Espagnol</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ID du chapitre</label>
+                    <input type="text" id="chapterId" required placeholder="Ex: H1, G2, etc.">
+                </div>
+                <div class="form-group">
+                    <label>Nom du chapitre</label>
+                    <input type="text" id="chapterName" required placeholder="Nom du chapitre">
+                </div>
+                <div class="form-group">
+                    <label>Lien Quiz 1</label>
+                    <input type="url" id="quizLink1" placeholder="URL du quiz 1">
+                </div>
+                <div class="form-group">
+                    <label>Lien Quiz 2 (Optionnel)</label>
+                    <input type="url" id="quizLink2" placeholder="URL du quiz 2">
+                </div>
+                <div class="form-group">
+                    <label>Lien Quiz 3 (Optionnel)</label>
+                    <input type="url" id="quizLink3" placeholder="URL du quiz 3">
+                </div>
+                <div class="form-group">
+                    <label>Lien Vidéo 1</label>
+                    <input type="url" id="videoLink1" placeholder="URL de la vidéo 1">
+                </div>
+                <div class="form-group">
+                    <label>Lien Vidéo 2 (Optionnel)</label>
+                    <input type="url" id="videoLink2" placeholder="URL de la vidéo 2">
+                </div>
+                <div class="form-group">
+                    <label>Lien Vidéo 3 (Optionnel)</label>
+                    <input type="url" id="videoLink3" placeholder="URL de la vidéo 3">
+                </div>
+                <button class="note-submit" onclick="submitNewChapter()">Ajouter le chapitre</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://yfxbheoyavydissfpvwh.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmeGJoZW95YXZ5ZGlzc2ZwdndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTI0NTEsImV4cCI6MjA2MzY2ODQ1MX0.n10JVF_CSap7fmdbQYcgpmtrfacOX9HBaSB779KrV1o';
+
+        // Configuration des matières avec leurs emojis
+        const SUBJECTS_CONFIG = {
+            'Histoire': { emoji: '📚', color: 'var(--primary-color)' },
+            'Geographie': { emoji: '🗺️', color: 'var(--primary-color)' },
+            'Français': { emoji: '📝', color: 'var(--primary-color)' },
+            'Mathematiques': { emoji: '📐', color: 'var(--primary-color)' },
+            'Physique': { emoji: '⚡', color: 'var(--primary-color)' },
+            'Chimie': { emoji: '🧪', color: 'var(--primary-color)' },
+            'SVT': { emoji: '🔬', color: 'var(--primary-color)' },
+            'Technologie': { emoji: '💻', color: 'var(--primary-color)' },
+            'Anglais': { emoji: '🇬🇧', color: 'var(--primary-color)' },
+            'Espagnol': { emoji: '🇪🇸', color: 'var(--primary-color)' },
+            'emc': { emoji: '⚖️', color: 'var(--primary-color)' }
+        };
+
+        // Fonction pour créer une carte de matière
+        function createSubjectCard(subject, emoji, color) {
+            const config = SUBJECTS_CONFIG[subject] || { emoji: '📚', color: 'var(--primary-color)' };
+            return `
+                <div class="subject-card ${subject.toLowerCase()}">
+                    <div class="subject-header" onclick="toggleSubject(this)">
+                        <div class="subject-title">
+                            <div class="subject-emoji">${config.emoji}</div>
+                            <h3>${subject}</h3>
+                        </div>
+                        <div class="subject-controls">
+                            <div class="subject-progress">
+                                <span class="completed">0</span>/<span class="total">0</span>
+                            </div>
+                            <div class="subject-arrow">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chapters-content" style="display: none;">
+                        <div class="chapters-list">
+                            <!-- Les chapitres seront ajoutés ici -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Modifier la fonction addChapter pour mieux gérer l'affichage
+        function addChapter(subject, chapterName, description, links, ressources, chapterId) {
+            const subjectCard = document.querySelector(`.subject-card.${subject.toLowerCase()}`);
+            if (subjectCard) {
+                const chaptersList = subjectCard.querySelector('.chapters-list');
+                if (chaptersList) {
+                    const chapterItem = document.createElement('div');
+                    chapterItem.className = 'chapter-item';
+
+                    // Construire les boutons de ressources dynamiquement
+                    let resourceButtonsHTML = '';
+                    // Bouton Quiz 1 (appelle showResource pour ouvrir le lien et afficher le popup note)
+                    if (ressources.quiz && ressources.quiz[0]) {
+                         resourceButtonsHTML += `
+                            <button class="resource-btn quiz-btn" onclick="showResource('quiz', '${subject}', '${chapterName}', '${ressources.quiz[0]}')">
+                                <i class="fas fa-question-circle"></i> Quiz 1
+                            </button>
+                        `;
+                    }
+                    // Boutons Quiz 2 et 3 (ouvrent directement le lien)
+                    if (ressources.quiz && ressources.quiz[1]) {
+                         resourceButtonsHTML += `
+                            <button class="resource-btn quiz-btn" onclick="window.open('${ressources.quiz[1]}', '_blank')">
+                                <i class="fas fa-question-circle"></i> Quiz 2
+                            </button>
+                        `;
+                    }
+                    if (ressources.quiz && ressources.quiz[2]) {
+                         resourceButtonsHTML += `
+                            <button class="resource-btn quiz-btn" onclick="window.open('${ressources.quiz[2]}', '_blank')">
+                                <i class="fas fa-question-circle"></i> Quiz 3
+                            </button>
+                        `;
+                    }
+                    // Boutons Vidéo 1, 2, et 3 (ouvrent directement le lien)
+                    if (ressources.videos && ressources.videos[0]) {
+                        resourceButtonsHTML += `
+                            <button class="resource-btn video-btn" onclick="window.open('${ressources.videos[0]}', '_blank')">
+                                <i class="fab fa-youtube"></i> Vidéo 1
+                            </button>
+                        `;
+                    }
+                     if (ressources.videos && ressources.videos[1]) {
+                        resourceButtonsHTML += `
+                            <button class="resource-btn video-btn" onclick="window.open('${ressources.videos[1]}', '_blank')">
+                                <i class="fab fa-youtube"></i> Vidéo 2
+                            </button>
+                        `;
+                    }
+                     if (ressources.videos && ressources.videos[2]) {
+                        resourceButtonsHTML += `
+                            <button class="resource-btn video-btn" onclick="window.open('${ressources.videos[2]}', '_blank')">
+                                <i class="fab fa-youtube"></i> Vidéo 3
+                            </button>
+                        `;
+                    }
+
+                    chapterItem.innerHTML = `
+                        <div class="chapter-info">
+                            <div class="chapter-header">
+                                <div class="chapter-id">${chapterId}</div>
+                                <div class="chapter-name">${chapterName}</div>
+                                <button class="edit-btn" onclick="editChapter('${chapterId}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                            <div class="chapter-resources">
+                                ${resourceButtonsHTML}
+                            </div>
+                        </div>
+                        <div class="chapter-complete">
+                            <input type="checkbox" id="complete-${chapterId}" onchange="updateProgress(this)">
+                            <label for="complete-${chapterId}">Terminé</label>
+                        </div>
+                    `;
+                    chaptersList.appendChild(chapterItem);
+                    updateStats();
+                }
+            } else {
+                console.warn(`Carte de matière non trouvée pour: ${subject}`);
+            }
+        }
+
+        // Fonction pour obtenir l'emoji correspondant à une matière
+        function getEmojiForSubject(subject) {
+            return SUBJECTS_CONFIG[subject]?.emoji || '📚';
+        }
+
+        // Fonction pour charger les chapitres depuis Supabase
+        async function loadChapters() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/revisions?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                
+                const chapters = await response.json();
+                console.log('Chapitres chargés:', chapters);
+                
+                // Grouper les chapitres par matière
+                const chaptersBySubject = {};
+                chapters.forEach(chapter => {
+                    console.log('Matière trouvée:', chapter.matiere, 'Type:', typeof chapter.matiere);
+                    if (!chaptersBySubject[chapter.matiere]) {
+                        chaptersBySubject[chapter.matiere] = [];
+                    }
+                    chaptersBySubject[chapter.matiere].push(chapter);
+                });
+
+                console.log('Matières groupées:', Object.keys(chaptersBySubject));
+
+                // Vider complètement le conteneur des matières
+                const subjectsContainer = document.querySelector('.subjects-container');
+                subjectsContainer.innerHTML = '';
+
+                // Créer les cartes pour chaque matière unique
+                for (const [subject, subjectChapters] of Object.entries(chaptersBySubject)) {
+                    console.log('Création de la carte pour:', subject);
+                    const config = SUBJECTS_CONFIG[subject];
+                    console.log('Configuration trouvée:', config);
+                    
+                    if (!config) {
+                        console.warn('Pas de configuration trouvée pour:', subject);
+                    }
+
+                    const newCard = createSubjectCard(
+                        subject,
+                        config ? config.emoji : '📚',
+                        config ? config.color : 'var(--primary-color)'
+                    );
+                    subjectsContainer.insertAdjacentHTML('beforeend', newCard);
+
+                    const subjectCard = document.querySelector(`.subject-card.${subject.toLowerCase()}`);
+                    if (subjectCard) {
+                        const chaptersList = subjectCard.querySelector('.chapters-list');
+                        const chaptersContent = subjectCard.querySelector('.chapters-content');
+                        if (chaptersList && chaptersContent) {
+                            chaptersContent.style.display = 'none';
+                            const arrow = subjectCard.querySelector('.subject-arrow i');
+                            if (arrow) {
+                                arrow.classList.remove('fa-chevron-up');
+                                arrow.classList.add('fa-chevron-down');
+                            }
+                            
+                            // Trier les chapitres par ID numérique
+                            subjectChapters.sort((a, b) => {
+                                // Supposer que l'ID est une chaîne comme 'H1', 'G2', 'EMC3'
+                                // On extrait le numéro à la fin
+                                const idA = parseInt(a.id.replace(/[^0-9]/g, ''), 10);
+                                const idB = parseInt(b.id.replace(/[^0-9]/g, ''), 10);
+                                return idA - idB;
+                            });
+
+                            subjectChapters.forEach(chapter => {
+                                addChapter(
+                                    subject,
+                                    chapter.chapitre,
+                                    chapter.description || '',
+                                    chapter.liens || [],
+                                    {
+                                        quiz: [chapter.lien_quiz_1, chapter.lien_quiz_2, chapter.lien_quiz_3],
+                                        videos: [chapter.lien_video_1, chapter.lien_video_2, chapter.lien_video_3]
+                                    },
+                                    chapter.id
+                                );
+                            });
+                        }
+                    }
+                }
+                
+                updateStats();
+            } catch (error) {
+                console.error('Erreur lors du chargement des chapitres:', error);
+                showCustomAlert('Erreur lors du chargement des chapitres. Veuillez réessayer.', 'error');
+            }
+        }
+
+        // Fonction pour créer un feu d'artifice
+        function createFirework(x, y) {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = x + 'px';
+            firework.style.top = y + 'px';
+            document.body.appendChild(firework);
+
+            // Créer les particules
+            const particleCount = 24; // Beaucoup plus de particules
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                const angle = (i / particleCount) * Math.PI * 2;
+                const velocity = 4 + Math.random() * 4; // Vitesse encore plus élevée
+                particle.style.setProperty('--angle', angle + 'rad');
+                particle.style.setProperty('--velocity', velocity);
+                // Plus de couleurs
+                const colors = [
+                    'var(--success-color)', 
+                    'var(--primary-color)', 
+                    'var(--warning-color)', 
+                    'var(--info-color)',
+                    'var(--purple-color)',
+                    'var(--pink-color)',
+                    'var(--yellow-color)',
+                    '#FF0000', // Rouge
+                    '#00FF00', // Vert
+                    '#0000FF', // Bleu
+                    '#FF00FF', // Magenta
+                    '#00FFFF'  // Cyan
+                ];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.setProperty('--particle-color', randomColor);
+                firework.appendChild(particle);
+            }
+
+            // Supprimer le feu d'artifice après l'animation
+            setTimeout(() => {
+                firework.remove();
+            }, 2000); // Animation plus longue
+        }
+
+        // Fonction pour créer plusieurs feux d'artifice
+        function createFireworks(x, y) {
+            const fireworkCount = 20; // Beaucoup plus de feux d'artifice
+            for (let i = 0; i < fireworkCount; i++) {
+                setTimeout(() => {
+                    // Position aléatoire sur l'écran
+                    const screenWidth = window.innerWidth;
+                    const screenHeight = window.innerHeight;
+                    const randomX = Math.random() * screenWidth;
+                    const randomY = Math.random() * screenHeight;
+                    createFirework(randomX, randomY);
+                }, i * 100); // Délai encore plus court entre chaque feu d'artifice
+            }
+
+            // Créer une deuxième vague de feux d'artifice
+            setTimeout(() => {
+                for (let i = 0; i < fireworkCount; i++) {
+                    setTimeout(() => {
+                        const screenWidth = window.innerWidth;
+                        const screenHeight = window.innerHeight;
+                        const randomX = Math.random() * screenWidth;
+                        const randomY = Math.random() * screenHeight;
+                        createFirework(randomX, randomY);
+                    }, i * 100);
+                }
+            }, 1000);
+        }
+
+        // Modifier la fonction updateProgress pour inclure l'animation
+        function updateProgress(checkbox) {
+            const chapterItem = checkbox.closest('.chapter-item');
+            const subjectCard = chapterItem.closest('.subject-card');
+            const progressInfo = subjectCard.querySelector('.subject-progress');
+            const totalChapters = subjectCard.querySelectorAll('.chapter-item').length;
+            const completedChapters = subjectCard.querySelectorAll('.chapter-item input[type="checkbox"]:checked').length;
+            
+            progressInfo.querySelector('.completed').textContent = completedChapters;
+            progressInfo.querySelector('.total').textContent = totalChapters;
+
+            // Ajouter l'animation de célébration
+            if (checkbox.checked) {
+                const completeButton = chapterItem.querySelector('.chapter-complete');
+                completeButton.classList.add('celebrating');
+                
+                // Créer les feux d'artifice sur tout l'écran
+                createFireworks();
+
+                // Retirer la classe d'animation après un délai
+                setTimeout(() => {
+                    completeButton.classList.remove('celebrating');
+                }, 500);
+            }
+            
+            updateStats();
+        }
+
+        // Fonction pour mettre à jour les statistiques
+        function updateStats() {
+            const totalChapters = document.querySelectorAll('.chapter-item').length;
+            const completedChapters = document.querySelectorAll('.chapter-item input[type="checkbox"]:checked').length;
+            const remainingChapters = totalChapters - completedChapters;
+            const progress = totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0;
+
+            // Mise à jour des statistiques
+            document.getElementById('total-chapters').textContent = totalChapters;
+            document.getElementById('completed-chapters').textContent = completedChapters;
+            document.getElementById('remaining-chapters').textContent = remainingChapters;
+            document.querySelector('.progress-fill').style.width = `${progress}%`;
+            document.getElementById('progress-percentage').textContent = `${Math.round(progress)}%`;
+
+            // Mise à jour des compteurs par matière
+            document.querySelectorAll('.subject-card').forEach(card => {
+                const subjectChapters = card.querySelectorAll('.chapter-item').length;
+                const subjectCompleted = card.querySelectorAll('.chapter-item input[type="checkbox"]:checked').length;
+                const progressInfo = card.querySelector('.subject-progress');
+                if (progressInfo) {
+                    progressInfo.querySelector('.completed').textContent = subjectCompleted;
+                    progressInfo.querySelector('.total').textContent = subjectChapters;
+                }
+            });
+        }
+
+        // Gestion de l'affichage des révisions
+        const showRevisionsBtn = document.getElementById('show-revisions-btn');
+        const revisionsSection = document.querySelector('.revisions-section');
+        let isRevisionsVisible = false;
+
+        showRevisionsBtn.addEventListener('click', () => {
+            isRevisionsVisible = !isRevisionsVisible;
+            revisionsSection.style.display = isRevisionsVisible ? 'block' : 'none';
+            showRevisionsBtn.innerHTML = isRevisionsVisible ? 
+                '<i class="fas fa-times"></i> Fermer' : 
+                '<i class="fas fa-book"></i> Révisions';
+        });
+
+        // Fonction pour basculer l'affichage d'une matière
+        function toggleSubject(header) {
+            const card = header.closest('.subject-card');
+            const content = card.querySelector('.chapters-content');
+            const arrow = header.querySelector('.subject-arrow i');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-up');
+            } else {
+                content.style.display = 'none';
+                arrow.classList.remove('fa-chevron-up');
+                arrow.classList.add('fa-chevron-down');
+            }
+        }
+
+        // Initialisation des matières
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger les chapitres depuis Supabase
+            loadChapters();
+        });
+
+        // Variables globales pour stocker les informations du quiz
+        let currentQuizInfo = {
+            subject: '',
+            chapter: '',
+            url: ''
+        };
+
+        // Fonction modifiée pour gérer le quiz et ouvrir le lien immédiatement
+        function showResource(type, subject, chapterName, resourceUrl) {
+            if (type === 'quiz') {
+                // Ouvrir le quiz dans un nouvel onglet immédiatement
+                if (resourceUrl) {
+                    window.open(resourceUrl, '_blank');
+                }
+
+                // Stocker les informations et afficher le popup
+                currentQuizInfo = {
+                    subject: subject,
+                    chapter: chapterName,
+                    url: resourceUrl // Stocker l'URL pour référence future si nécessaire
+                };
+                document.getElementById('notePopup').classList.add('active');
+                document.getElementById('noteInput').focus();
+            } else if (resourceUrl) {
+                window.open(resourceUrl, '_blank');
+            }
+        }
+
+        // Fonction pour fermer le popup
+        function closeNotePopup() {
+            document.getElementById('notePopup').classList.remove('active');
+            document.getElementById('noteInput').value = '';
+        }
+
+        // Fonction pour afficher une alerte personnalisée
+        function showCustomAlert(message, type = 'info', duration = 2000) {
+            const container = document.getElementById('custom-alert-container');
+            const alertElement = document.createElement('div');
+            alertElement.classList.add('custom-alert', type);
+            
+            // Ajouter l'icône appropriée selon le type
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-exclamation-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                case 'info':
+                    icon = '<i class="fas fa-info-circle"></i>';
+                    break;
+            }
+            
+            alertElement.innerHTML = `${icon}${message}`;
+            container.appendChild(alertElement);
+
+            // Forcer le reflow pour l'animation CSS
+            void alertElement.offsetWidth;
+
+            alertElement.classList.add('show');
+
+            // Masquer l'alerte après la durée spécifiée
+            setTimeout(() => {
+                alertElement.classList.remove('show');
+                // Retirer l'élément du DOM après la fin de la transition
+                alertElement.addEventListener('transitionend', () => alertElement.remove());
+            }, duration);
+        }
+
+        // Fonction pour soumettre la note
+        async function submitNote() {
+            const note = document.getElementById('noteInput').value;
+            if (note && note >= 0 && note <= 20) {
+                try {
+                    console.log(`Note ${note}/20 enregistrée pour ${currentQuizInfo.chapter} en ${currentQuizInfo.subject}`);
+                    closeNotePopup();
+                    showCustomAlert('Note enregistrée avec succès !', 'success');
+                } catch (error) {
+                    console.error('Erreur lors de l\'enregistrement de la note:', error);
+                    showCustomAlert('Erreur lors de l\'enregistrement de la note.', 'error');
+                }
+            } else {
+                showCustomAlert('Veuillez entrer une note valide entre 0 et 20', 'warning');
+            }
+        }
+
+        // Fermer le popup si on clique en dehors
+        document.getElementById('notePopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeNotePopup();
+            }
+        });
+
+        // Gérer la touche Entrée
+        document.getElementById('noteInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitNote();
+            }
+        });
+
+        // Modifier les fonctions de gestion du popup
+        function showAddChapterPopup(isEditing = false) {
+            const popup = document.getElementById('addChapterPopup');
+            popup.style.display = 'flex';
+            popup.classList.add('active');
+            if (!isEditing) {
+                resetAddChapterForm();
+            }
+        }
+
+         function resetAddChapterForm() {
+            document.getElementById('subjectSelect').value = '';
+            document.getElementById('chapterId').value = '';
+            document.getElementById('chapterName').value = '';
+            document.getElementById('quizLink1').value = '';
+            document.getElementById('quizLink2').value = '';
+            document.getElementById('quizLink3').value = '';
+            document.getElementById('videoLink1').value = '';
+            document.getElementById('videoLink2').value = '';
+            document.getElementById('videoLink3').value = '';
+         }
+
+        function closeAddChapterPopup() {
+            const popup = document.getElementById('addChapterPopup');
+            popup.style.display = 'none';
+            popup.classList.remove('active');
+            resetAddChapterForm();
+        }
+
+        // Ajouter l'écouteur d'événement pour le bouton d'ajout
+        document.addEventListener('DOMContentLoaded', function() {
+            const addChapterBtn = document.getElementById('add-chapter-btn');
+            if (addChapterBtn) {
+                addChapterBtn.addEventListener('click', () => showAddChapterPopup());
+            }
+
+            // Fermer le popup si on clique en dehors
+            const addChapterPopup = document.getElementById('addChapterPopup');
+            if (addChapterPopup) {
+                addChapterPopup.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeAddChapterPopup();
+                    }
+                });
+            }
+        });
+
+        async function submitNewChapter() {
+            const subject = document.getElementById('subjectSelect').value;
+            const chapterId = document.getElementById('chapterId').value;
+            const chapterName = document.getElementById('chapterName').value;
+
+            const quizLink1 = document.getElementById('quizLink1').value;
+            const quizLink2 = document.getElementById('quizLink2').value;
+            const quizLink3 = document.getElementById('quizLink3').value;
+            const videoLink1 = document.getElementById('videoLink1').value;
+            const videoLink2 = document.getElementById('videoLink2').value;
+            const videoLink3 = document.getElementById('videoLink3').value;
+
+            if (!subject || !chapterId || !chapterName) {
+                showCustomAlert('Veuillez remplir tous les champs obligatoires (Matière, ID, Nom)', 'warning');
+                return;
+            }
+
+            // Déterminer le type de matière - Assurez-vous que les valeurs correspondent exactement à l'ENUM de la DB
+            let matiereType = subject; // Utiliser le nom de la matière comme type par défaut
+
+            // Ajustements pour les cas spécifiques qui diffèrent du nom de la matière
+            if (subject === 'Technologie') {
+                matiereType = 'Techno'; // **CORRIGÉ** : Doit correspondre exactement à la valeur dans l'ENUM de la DB
+            } else if (subject === 'EMC') {
+                 matiereType = 'emc'; // Doit correspondre exactement à la valeur dans l'ENUM de la DB
+            } else if (subject === 'Géographie') { // Ajouter ce cas si 'Géographie' n'est pas dans l'ENUM mais 'Geographie' l'est
+                 matiereType = 'Geographie';
+            } else if (subject === 'Mathématiques') { // Ajouter ce cas si 'Mathématiques' n'est pas dans l'ENUM mais 'Mathematiques' l'est
+                 matiereType = 'Mathematiques';
+            } else if (subject === 'Français') { // Ajouter ce cas si 'Français' n'est pas dans l'ENUM mais 'Francais' l'est
+                 matiereType = 'Francais';
+            }
+            // Pour les autres matières, assurez-vous que le nom dans le <select> correspond exactement
+            // à la valeur dans l'ENUM de la base de données.
+
+            try {
+                // Vérifier si le chapitre existe déjà
+                const checkResponse = await fetch(`${SUPABASE_URL}/rest/v1/revisions?id=eq.${chapterId}`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+
+                const existingChapters = await checkResponse.json();
+                const method = existingChapters.length > 0 ? 'PATCH' : 'POST';
+                const url = existingChapters.length > 0 
+                    ? `${SUPABASE_URL}/rest/v1/revisions?id=eq.${chapterId}`
+                    : `${SUPABASE_URL}/rest/v1/revisions`;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        matiere: subject, // Envoyer le nom complet de la matière pour l'affichage
+                        id: chapterId,
+                        chapitre: chapterName,
+                        lien_quiz_1: quizLink1 || null,
+                        lien_quiz_2: quizLink2 || null,
+                        lien_quiz_3: quizLink3 || null,
+                        lien_video_1: videoLink1 || null,
+                        lien_video_2: videoLink2 || null,
+                        lien_video_3: videoLink3 || null,
+                        matiere_type: matiereType // Envoyer la valeur corrigée pour l'ENUM
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Erreur HTTP: ${response.status}`);
+                }
+
+                showCustomAlert(existingChapters.length > 0 ? 'Chapitre mis à jour avec succès !' : 'Chapitre ajouté avec succès !', 'success');
+                closeAddChapterPopup();
+                
+                // Recharger les chapitres après modification/ajout
+                await loadChapters();
+            } catch (error) {
+                console.error('Erreur lors de la modification du chapitre:', error);
+                showCustomAlert(`Erreur lors de la modification du chapitre: ${error.message}`, 'error');
+            }
+        }
+
+        // Ajouter une fonction pour charger les données d'un chapitre existant
+        async function loadChapterData(chapterId) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/revisions?id=eq.${chapterId}`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+
+                const chapters = await response.json();
+                if (chapters.length > 0) {
+                    const chapter = chapters[0];
+                    document.getElementById('subjectSelect').value = chapter.matiere;
+                    document.getElementById('chapterId').value = chapter.id;
+                    document.getElementById('chapterName').value = chapter.chapitre;
+                    document.getElementById('quizLink1').value = chapter.lien_quiz_1 || '';
+                    document.getElementById('quizLink2').value = chapter.lien_quiz_2 || '';
+                    document.getElementById('quizLink3').value = chapter.lien_quiz_3 || '';
+                    document.getElementById('videoLink1').value = chapter.lien_video_1 || '';
+                    document.getElementById('videoLink2').value = chapter.lien_video_2 || '';
+                    document.getElementById('videoLink3').value = chapter.lien_video_3 || '';
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des données du chapitre:', error);
+                showCustomAlert('Erreur lors du chargement des données du chapitre.', 'error');
+            }
+        }
+
+        // Ajouter la fonction pour éditer un chapitre
+        async function editChapter(chapterId) {
+            await loadChapterData(chapterId);
+            showAddChapterPopup(true);
+        }
+
+        // Fonction pour afficher la notification temporaire
+        function showNotification(message) {
+            const notificationPopup = document.getElementById('notification-popup');
+            notificationPopup.textContent = message;
+            notificationPopup.classList.add('show');
+
+            setTimeout(() => {
+                notificationPopup.classList.remove('show');
+            }, 2000); // 2000 millisecondes = 2 secondes
+        }
+    </script>
+
+    <style>
+        /* Styles pour les feux d'artifice */
+        .firework {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .firework-particle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--particle-color, var(--success-color)) 0%, transparent 70%);
+            animation: particle 2s ease-out forwards;
+            box-shadow: 0 0 15px var(--particle-color, var(--success-color));
+        }
+
+        @keyframes particle {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: 
+                    translate(
+                        calc(cos(var(--angle)) * var(--velocity) * 200px),
+                        calc(sin(var(--angle)) * var(--velocity) * 200px)
+                    )
+                    scale(0);
+                opacity: 0;
+            }
+        }
+
+        .firework::before,
+        .firework::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: fireworks 1.5s ease-out forwards;
+        }
+
+        .firework::before {
+            background: radial-gradient(circle, var(--success-color) 0%, transparent 70%);
+            box-shadow: 0 0 30px var(--success-color);
+        }
+
+        .firework::after {
+            background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+            animation-delay: 0.1s;
+            box-shadow: 0 0 30px var(--primary-color);
+        }
+
+        @keyframes fireworks {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+</html> 

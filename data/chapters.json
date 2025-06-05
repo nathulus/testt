@@ -1,0 +1,58 @@
+{
+    "chapitres": {
+        "Histoire": [
+            {
+                "id": 1,
+                "titre": "La Révolution Française",
+                "description": "Étude de la période révolutionnaire en France",
+                "liens": ["https://exemple.com/revolution"],
+                "ressources": {
+                    "quiz": ["https://exemple.com/quiz-revolution"],
+                    "videos": ["https://youtube.com/watch?v=revolution"]
+                }
+            },
+            {
+                "id": 2,
+                "titre": "La Première Guerre Mondiale",
+                "description": "Analyse des causes et conséquences",
+                "liens": ["https://exemple.com/ww1"],
+                "ressources": {
+                    "quiz": ["https://exemple.com/quiz-ww1"],
+                    "videos": ["https://youtube.com/watch?v=ww1"]
+                }
+            },
+            {
+                "id": 3,
+                "titre": "La Seconde Guerre Mondiale",
+                "description": "Étude des événements majeurs",
+                "liens": ["https://exemple.com/ww2"],
+                "ressources": {
+                    "quiz": ["https://exemple.com/quiz-ww2"],
+                    "videos": ["https://youtube.com/watch?v=ww2"]
+                }
+            }
+        ],
+        "Géographie": [
+            {
+                "id": 1,
+                "titre": "Les Climats",
+                "description": "Étude des différents types de climats",
+                "liens": ["https://exemple.com/climats"],
+                "ressources": {
+                    "quiz": ["https://exemple.com/quiz-climats"],
+                    "videos": ["https://youtube.com/watch?v=climats"]
+                }
+            },
+            {
+                "id": 2,
+                "titre": "La Population Mondiale",
+                "description": "Analyse démographique",
+                "liens": ["https://exemple.com/population"],
+                "ressources": {
+                    "quiz": ["https://exemple.com/quiz-population"],
+                    "videos": ["https://youtube.com/watch?v=population"]
+                }
+            }
+        ]
+    }
+} 

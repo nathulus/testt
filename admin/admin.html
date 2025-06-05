@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Liens</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .welcome-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+        }
+
+        .welcome-container h1 {
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .welcome-container p {
+            color: var(--text-medium);
+        }
+
+        .section-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+        }
+
+        .section-container h2 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: var(--bg-light);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .action-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: var(--primary-hover-color);
+            transform: translateY(-1px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        textarea.input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        select.input {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .category-app { color: var(--primary-color); }
+        .category-college { color: #059669; }
+        .category-server { color: #dc2626; }
+
+        .export-button {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .export-button:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="welcome-container">
+            <h1>Gestion des Liens</h1>
+            <p>Ajoutez, modifiez ou supprimez les liens de votre hub facilement.</p>
+            <button onclick="exporterCSV()" class="export-button">Exporter en CSV</button>
+        </div>
+
+        <div class="section-container">
+            <h2>Ajouter un lien</h2>
+            <form id="add-link-form">
+                <input type="text" id="nom" placeholder="Nom du lien" class="input" required>
+                <input type="url" id="url" placeholder="URL" class="input" required>
+                <select id="categorie" class="input" required>
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="app">Application</option>
+                    <option value="college">Collège</option>
+                    <option value="server">Serveur</option>
+                </select>
+                <textarea id="description" placeholder="Description" class="input"></textarea>
+                <button type="submit" class="action-button">Ajouter le lien</button>
+            </form>
+        </div>
+
+        <div class="section-container">
+            <h2>Liste des liens</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>URL</th>
+                        <th>Catégorie</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="liste-liens"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../assets/script.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html> 

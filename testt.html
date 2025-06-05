@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestion des Produits</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    input, textarea {
+      margin: 5px;
+      padding: 8px;
+      width: 200px;
+    }
+    button {
+      padding: 8px 12px;
+      margin: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Gestion des Produits</h1>
+
+  <div>
+    <input id="nom" placeholder="Nom" />
+    <input id="url" placeholder="URL" />
+    <textarea id="description" placeholder="Description"></textarea>
+    <button onclick="ajouterProduit()">Ajouter</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Nom</th><th>URL</th><th>Description</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="liste-produits"></tbody>
+  </table>
+
+  <script>
+    const URL_BASE = "https://yfxbheoyavydissfpvwh.supabase.co";
+    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmeGJoZW95YXZ5ZGlzc2ZwdndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTI0NTEsImV4cCI6MjA2MzY2ODQ1MX0.n10JVF_CSap7fmdbQYcgpmtrfacOX9HBaSB779KrV1o";
+
+    async function fetchProduits() {
+  const res = await fetch(`${URL_BASE}/rest/v1/URL`, {
+    headers: {
+      apikey: API_KEY,
+      Authorization: `Bearer ${API_KEY}`,
+    },
+  });
+
+  const data = await res.json();
+  console.log("Données reçues :", data); // ← ajoute ça
+
+  const tbody = document.getElementById("liste-produits");
+  tbody.innerHTML = "";
+
+  data.forEach(p => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${p.id}</td>
+        <td><input value="${p.nom}" onchange="modifierProduit(${p.id}, 'nom', this.value)" /></td>
+        <td><input value="${p.url}" onchange="modifierProduit(${p.id}, 'url', this.value)" /></td>
+        <td><textarea onchange="modifierProduit(${p.id}, 'description', this.value)">${p.description}</textarea></td>
+        <td><button onclick="supprimerProduit(${p.id})">🗑️ Supprimer</button></td>
+      </tr>
+    `;
+  });
+}
+
+
+    async function ajouterProduit() {
+      const nom = document.getElementById("nom").value;
+      const url = document.getElementById("url").value;
+      const description = document.getElementById("description").value;
+
+      await fetch(`${URL_BASE}/rest/v1/URL`, {
+        method: "POST",
+        headers: {
+          apikey: API_KEY,
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=representation"
+        },
+        body: JSON.stringify({ nom, url, description }),
+      });
+
+      fetchProduits();
+    }
+
+    async function modifierProduit(id, champ, valeur) {
+      await fetch(`${URL_BASE}/rest/v1/URL?id=eq.${id}`, {
+        method: "PATCH",
+        headers: {
+          apikey: API_KEY,
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ [champ]: valeur }),
+      });
+
+      fetchProduits();
+    }
+
+    async function supprimerProduit(id) {
+      await fetch(`${URL_BASE}/rest/v1/URL?id=eq.${id}`, {
+        method: "DELETE",
+        headers: {
+          apikey: API_KEY,
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      });
+
+      fetchProduits();
+    }
+
+    fetchProduits();
+  </script>
+</body>
+</html>

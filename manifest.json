@@ -1,0 +1,38 @@
+{
+    "name": "Hub Révisions",
+    "short_name": "Hub",
+    "description": "Application de révisions pour les étudiants",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#4F46E5",
+    "theme_color": "#4F46E5",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "assets/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "assets/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Révisions",
+            "url": "/revisions.html",
+            "icons": [{ "src": "assets/icons/revisions-96x96.png", "sizes": "96x96" }]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "assets/screenshots/home.png",
+            "sizes": "1080x1920",
+            "type": "image/png"
+        }
+    ]
+} 

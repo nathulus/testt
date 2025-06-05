@@ -1,0 +1,12 @@
+{
+  "name": "hub-revisions",
+  "version": "1.0.0",
+  "description": "Application de révisions pour les étudiants",
+  "main": "index.js",
+  "scripts": {
+    "generate-icons": "node generate-icons.js"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+} 

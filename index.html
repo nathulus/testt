@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Tableau de Bord Interactif</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hub Révisions">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    <link rel="icon" href="assets/icons/icon-192x192.png">
+    <script>
+        // Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker enregistré avec succès:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Échec de l\'enregistrement du ServiceWorker:', error);
+                    });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/009/125/951/small_2x/hub-logo-hub-letter-hub-letter-logo-design-initials-hub-logo-linked-with-circle-and-uppercase-monogram-logo-hub-typography-for-technology-business-and-real-estate-brand-vector.jpg" alt="Hub Logo" class="hub-logo-img">
+                <h2>Mon Hub</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul id="site-list">
+                    <li><a href="#" id="home-link"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="revisions.html" class="site-link" data-title="Gestion des Révisions" data-target="content-frame"><i class="fas fa-book"></i> Révisions</a></li>
+                    <li class="menu-category">
+                        <i class="fas fa-folder folder-icon"></i>
+                        Collège
+                        <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                    </li>
+                    <li class="menu-category">
+                        <i class="fas fa-folder folder-icon"></i>
+                        Serveurs
+                        <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                    </li>
+                    <li class="menu-category">
+                        <i class="fas fa-folder folder-icon"></i>
+                        Applications
+                        <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                    </li>
+                    <li><a href="#" id="settings-link"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <button id="toggle-sidebar-btn"><i class="fas fa-bars"></i></button>
+                <div class="topbar-title" id="current-site-title">Tableau de Bord</div>
+                <div class="topbar-buttons">
+                    <button class="btn" id="refresh-frame-btn"><i class="fas fa-sync-alt"></i><span>Rafraîchir</span></button>
+                    <button class="btn" id="open-chat-btn"><i class="fas fa-comments"></i><span>IA</span></button>
+                    <button class="btn install-btn" id="install-btn">
+                        <i class="fas fa-download"></i>
+                        <span>Installer</span>
+                    </button>
+                </div>
+            </header>
+            <section class="content-area">
+                <div id="iframe-placeholder">
+                    <i class="fas fa-spinner fa-spin placeholder-icon"></i>
+                    <p>Chargement du contenu...</p>
+                </div>
+                <iframe id="content-frame" src="about:blank" frameborder="0" style="display: none;"></iframe>
+            </section>
+        </main>
+    </div>
+    <div id="chat-popup" class="chat-popup" style="display:none;">
+        <div id="chat-header" class="chat-header">
+            <span>Chat IA (Groq)</span>
+            <button id="chat-close-btn" title="Fermer"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-body">
+            <div id="chat-messages" class="chat-messages"></div>
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="chat-input" placeholder="Écris ton message..." autocomplete="off" />
+                <button type="submit" id="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+    <script src="assets/script.js"></script>
+    <script>
+        // Gestion de l'installation PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        // Cacher le bouton par défaut
+        installBtn.style.display = 'none';
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Afficher le bouton quand l'installation est possible
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('Application installée !');
+                }
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('Application installée avec succès !');
+            installBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

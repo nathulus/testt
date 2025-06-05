@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #3B82F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-color);
+            transition: background-color 0.5s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .initial-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .login-form {
+            display: none;
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .login-form.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #4338CA;
+            transform: translateY(-2px);
+        }
+
+        .welcome-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .welcome-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-text">Bienvenue</div>
+        <div class="initial-buttons">
+            <button class="btn" onclick="showLoginForm()">Login</button>
+            <button class="btn" onclick="showRegisterForm()">Register</button>
+        </div>
+        <div class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Entrez votre email">
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" placeholder="Entrez votre mot de passe">
+            </div>
+            <button class="submit-btn" onclick="handleLogin()">Se connecter</button>
+        </div>
+    </div>
+
+    <script>
+        function showLoginForm() {
+            // Afficher le texte de bienvenue
+            document.querySelector('.welcome-text').classList.add('active');
+            
+            // Cacher les boutons initiaux
+            document.querySelector('.initial-buttons').style.display = 'none';
+            
+            // Attendre 2 secondes
+            setTimeout(() => {
+                // Changer le fond en blanc
+                document.body.style.backgroundColor = 'white';
+                
+                // Afficher le formulaire
+                const loginForm = document.getElementById('loginForm');
+                loginForm.classList.add('active');
+            }, 2000);
+        }
+
+        function showRegisterForm() {
+            // Même logique que showLoginForm mais pour l'inscription
+            showLoginForm(); // Pour l'instant, on utilise le même formulaire
+        }
+
+        function handleLogin() {
+            // Gérer la connexion ici
+            console.log('Tentative de connexion...');
+        }
+    </script>
+</body>
+</html> 

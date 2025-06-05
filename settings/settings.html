@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Personnalisation</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="settings-page">
+    <div class="settings-container">
+        <header class="settings-header">
+            <h1><i class="fas fa-palette"></i> Personnalisation du thème</h1>
+            <div class="theme-actions">
+                <button id="save-theme" class="btn primary"><i class="fas fa-save"></i> Sauvegarder</button>
+                <button id="reset-theme" class="btn secondary"><i class="fas fa-undo"></i> Réinitialiser</button>
+                <button id="export-theme" class="btn"><i class="fas fa-file-export"></i> Exporter</button>
+                <button id="import-theme" class="btn"><i class="fas fa-file-import"></i> Importer</button>
+            </div>
+        </header>
+
+        <div class="settings-content">
+            <div class="theme-preview">
+                <div class="preview-header">Aperçu en direct</div>
+                <div class="preview-container">
+                    <div class="preview-sidebar"></div>
+                    <div class="preview-main">
+                        <div class="preview-topbar"></div>
+                        <div class="preview-content"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-controls">
+                <div class="control-section">
+                    <h2>Couleurs principales</h2>
+                    <div class="color-grid">
+                        <div class="color-control">
+                            <label>Primaire</label>
+                            <div class="color-inputs">
+                                <input type="color" id="primary-color" data-var="--primary-color">
+                                <input type="text" class="color-hex" data-for="primary-color">
+                            </div>
+                        </div>
+                        <div class="color-control">
+                            <label>Secondaire</label>
+                            <div class="color-inputs">
+                                <input type="color" id="secondary-color" data-var="--secondary-color">
+                                <input type="text" class="color-hex" data-for="secondary-color">
+                            </div>
+                        </div>
+                        <div class="color-control">
+                            <label>Accent</label>
+                            <div class="color-inputs">
+                                <input type="color" id="accent-color" data-var="--accent-color">
+                                <input type="text" class="color-hex" data-for="accent-color">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2>Dégradés</h2>
+                    <div class="gradient-controls">
+                        <div class="gradient-control">
+                            <label>Menu latéral</label>
+                            <div class="gradient-stops" id="sidebar-gradient">
+                                <div class="gradient-stop" style="left: 0%">
+                                    <input type="color">
+                                    <input type="number" min="0" max="100" value="0">
+                                </div>
+                                <div class="gradient-stop" style="left: 50%">
+                                    <input type="color">
+                                    <input type="number" min="0" max="100" value="50">
+                                </div>
+                                <div class="gradient-stop" style="left: 100%">
+                                    <input type="color">
+                                    <input type="number" min="0" max="100" value="100">
+                                </div>
+                            </div>
+                            <div class="gradient-preview"></div>
+                            <div class="gradient-actions">
+                                <button class="add-stop"><i class="fas fa-plus"></i></button>
+                                <select class="gradient-type">
+                                    <option value="linear">Linéaire</option>
+                                    <option value="radial">Radial</option>
+                                </select>
+                                <input type="number" class="gradient-angle" value="150" min="0" max="360">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2>Effets visuels</h2>
+                    <div class="effects-grid">
+                        <div class="effect-control">
+                            <label>Ombres</label>
+                            <div class="shadow-controls">
+                                <div class="shadow-params">
+                                    <input type="range" id="shadow-x" min="-20" max="20" value="0">
+                                    <label>X</label>
+                                    <input type="range" id="shadow-y" min="-20" max="20" value="4">
+                                    <label>Y</label>
+                                    <input type="range" id="shadow-blur" min="0" max="50" value="12">
+                                    <label>Flou</label>
+                                    <input type="range" id="shadow-spread" min="-10" max="20" value="0">
+                                    <label>Diffusion</label>
+                                </div>
+                                <div class="shadow-color">
+                                    <input type="color" id="shadow-color">
+                                    <input type="range" id="shadow-opacity" min="0" max="100" value="20">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="effect-control">
+                            <label>Arrondis</label>
+                            <div class="radius-controls">
+                                <div class="radius-presets">
+                                    <button data-radius="0">Carré</button>
+                                    <button data-radius="4">Léger</button>
+                                    <button data-radius="8">Moyen</button>
+                                    <button data-radius="16">Large</button>
+                                    <button data-radius="full">Complet</button>
+                                </div>
+                                <div class="radius-custom">
+                                    <input type="range" id="radius-size" min="0" max="30" value="8">
+                                    <span class="radius-value">8px</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2>Animations</h2>
+                    <div class="animation-controls">
+                        <div class="animation-speed">
+                            <label>Vitesse globale</label>
+                            <input type="range" id="animation-speed" min="0" max="2" step="0.1" value="1">
+                            <div class="speed-presets">
+                                <button data-speed="0.5">Lent</button>
+                                <button data-speed="1">Normal</button>
+                                <button data-speed="1.5">Rapide</button>
+                            </div>
+                        </div>
+                        <div class="animation-easing">
+                            <label>Courbe d'animation</label>
+                            <select id="animation-easing">
+                                <option value="linear">Linéaire</option>
+                                <option value="ease">Doux</option>
+                                <option value="ease-in">Accélération</option>
+                                <option value="ease-out">Décélération</option>
+                                <option value="ease-in-out">Doux début/fin</option>
+                                <option value="custom">Personnalisé</option>
+                            </select>
+                            <div class="bezier-editor" style="display: none;">
+                                <canvas id="bezier-curve"></canvas>
+                                <div class="bezier-controls">
+                                    <input type="number" step="0.1" min="0" max="1" value="0.4">
+                                    <input type="number" step="0.1" min="0" max="1" value="0">
+                                    <input type="number" step="0.1" min="0" max="1" value="0.2">
+                                    <input type="number" step="0.1" min="0" max="1" value="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2>Thèmes prédéfinis</h2>
+                    <div class="theme-presets">
+                        <button class="theme-preset" data-theme="default">
+                            <div class="preset-preview default"></div>
+                            <span>Par défaut</span>
+                        </button>
+                        <button class="theme-preset" data-theme="dark">
+                            <div class="preset-preview dark"></div>
+                            <span>Sombre</span>
+                        </button>
+                        <button class="theme-preset" data-theme="light">
+                            <div class="preset-preview light"></div>
+                            <span>Clair</span>
+                        </button>
+                        <button class="theme-preset" data-theme="contrast">
+                            <div class="preset-preview contrast"></div>
+                            <span>Contraste</span>
+                        </button>
+                        <button class="theme-preset" data-theme="nature">
+                            <div class="preset-preview nature"></div>
+                            <span>Nature</span>
+                        </button>
+                        <button class="theme-preset" data-theme="ocean">
+                            <div class="preset-preview ocean"></div>
+                            <span>Océan</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../assets/script.js"></script>
+</body>
+</html> 
