@@ -99,31 +99,59 @@
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
 
-        // Cacher le bouton par défaut
-        installBtn.style.display = 'none';
+        // Débogage
+        console.log('Vérification de l\'installation PWA...');
 
+        // Vérifier si le service worker est supporté
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker enregistré avec succès:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Échec de l\'enregistrement du ServiceWorker:', error);
+                    });
+            });
+        } else {
+            console.log('ServiceWorker non supporté');
+        }
+
+        // Écouter l'événement beforeinstallprompt
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('Événement beforeinstallprompt déclenché');
             e.preventDefault();
             deferredPrompt = e;
-            // Afficher le bouton quand l'installation est possible
+            // Afficher le bouton UNIQUEMENT quand l'installation est possible
             installBtn.style.display = 'flex';
         });
 
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('Application installée !');
-                }
-                deferredPrompt = null;
-                installBtn.style.display = 'none';
-            }
-        });
-
+        // Vérifier si l'app est déjà installée et masquer le bouton si c'est le cas
         window.addEventListener('appinstalled', () => {
             console.log('Application installée avec succès !');
             installBtn.style.display = 'none';
+        });
+
+         // Masquer le bouton si l'installation n'est pas possible au chargement (si beforeinstallprompt n'a pas encore été déclenché)
+        if (!deferredPrompt) {
+             installBtn.style.display = 'none';
+        }
+
+        installBtn.addEventListener('click', async () => {
+            console.log('Bouton d\'installation cliqué');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('Résultat de l\'installation:', outcome);
+                if (outcome === 'accepted') {
+                    console.log('Application installée !');
+                    installBtn.style.display = 'none'; // Masquer le bouton après acceptation
+                }
+                deferredPrompt = null;
+            } else {
+                console.log('Aucune installation en attente ou déjà installée');
+                alert('L\'installation n\'est pas disponible pour le moment ou l\'application est déjà installée. Assurez-vous d\'utiliser un navigateur compatible et que le site est servi en HTTPS.');
+            }
         });
     </script>
 </body>
